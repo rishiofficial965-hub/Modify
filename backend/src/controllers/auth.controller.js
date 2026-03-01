@@ -1,7 +1,5 @@
 const userModel = require("../models/user.model");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
+const blackListModel = require("../models/blacklist.model");
 async function registerUser(req, res) {
   const { username, email, password } = req.body;
   const isAlreadyRegistered = await userModel.findOne({
@@ -47,9 +45,11 @@ async function registerUser(req, res) {
 async function loginUser(req, res) {
   const { username, email, password } = req.body;
 
-  const isUserExists = await userModel.findOne({
-    $or: [{ username }, { email }],
-  });
+  const isUserExists = await userModel
+    .findOne({
+      $or: [{ username }, { email }],
+    })
+    .select("+password");
 
   if (!isUserExists)
     return res.status(400).json({
@@ -65,8 +65,8 @@ async function loginUser(req, res) {
 
   const token = jwt.sign(
     {
-      id: user._id,
-      username: user.username,
+      id: isUserExists._id,
+      username: isUserExists.username,
     },
     process.env.JWT_SECRET,
     {
@@ -79,6 +79,18 @@ async function loginUser(req, res) {
   return res.status(200).json({
     message: "login Successfully",
     user: {
+      id: isUserExists._id,
+      username: isUserExists.username,
+      email: isUserExists.email,
+    },
+  });
+}
+
+async function getMe(req, res) {
+  const user = await userModel.findById(req.user.id);
+  return res.status(200).json({
+    message: "fetched Successfully",
+    user: {
       id: user._id,
       username: user.username,
       email: user.email,
@@ -86,4 +98,15 @@ async function loginUser(req, res) {
   });
 }
 
-module.exports = { registerUser, loginUser };
+async function logoutUser(req, res) {
+  const token = req.cookies.token;
+  res.clearCookies("token");
+  await blackListModel.create({
+    token,
+  });
+  res.status(200).json({
+    message: "logout successfully",
+  });
+}
+
+module.exports = { registerUser, loginUser, getMe, logoutUser };

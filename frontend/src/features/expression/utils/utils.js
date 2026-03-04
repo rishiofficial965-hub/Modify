@@ -13,16 +13,12 @@ export const mapToEmotion = (blend) => {
   const s = {};
   blend.forEach((b) => (s[b.categoryName] = b.score));
 
-  if (s.mouthSmileLeft > 0.25 || s.mouthSmileRight > 0.25) return "😊 Happy";
+  if (s.mouthSmileLeft > 0.3 || s.mouthSmileRight > 0.3) return "happy";
+  if (s.browDownLeft > 0.25 || s.browDownRight > 0.25) return "angry";
+  if (s.jawOpen > 0.3 || s.eyeWideLeft > 0.3 || s.eyeWideRight > 0.3) return "surprised";
+  if (s.mouthFrownLeft > 0.25 || s.mouthFrownRight > 0.25) return "sad";
 
-  if (s.browDownLeft > 0.2 || s.browDownRight > 0.2) return "😡 Angry";
-
-  if (s.jawOpen > 0.35 || s.eyeWideLeft > 0.35 || s.eyeWideRight > 0.35)
-    return "😮 Surprised";
-
-  if (s.mouthFrownLeft > 0.2 || s.mouthFrownRight > 0.2) return "😢 Sad";
-
-  return "😐 Neutral";
+  return "neutral";
 };
 
 export const detectBlendshapes = ({

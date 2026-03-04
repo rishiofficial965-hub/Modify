@@ -1,5 +1,5 @@
 import { login, register, getMe, logout } from "../services/auth.api";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../auth.context";
 
 export const useAuth = () => {
@@ -59,8 +59,13 @@ export const useAuth = () => {
     }
   }
   
+  const hasFetched = useRef(false);
+
   useEffect(() => {
-    handleGetMe();
+    if (!hasFetched.current) {
+      handleGetMe();
+      hasFetched.current = true;
+    }
   }, []);
 
   return {

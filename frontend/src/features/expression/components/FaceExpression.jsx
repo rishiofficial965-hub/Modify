@@ -27,14 +27,22 @@ const FaceExpression = () => {
     };
   }, []);
 
+  const moodDisplayMap = {
+    happy: "😊 Happy",
+    sad: "😢 Sad",
+    surprised: "😮 Surprised",
+    angry: "😡 Angry",
+    neutral: "😐 Neutral",
+    "Initializing...": "Initializing...",
+    "Waiting for webcam...": "Waiting for webcam...",
+    "No face detected": "No face detected"
+  };
+
   const fetchSongBasedOnMood = () => {
-    if (expression && !expression.includes("Initializing") && !expression.includes("Waiting") && !expression.includes("No face detected")) {
-      // Extract main emotion from string (e.g., "😊 Happy" -> "Happy")
-      const moodParts = expression.trim().split(" ");
-      const coreMood = moodParts.length > 1 ? moodParts[moodParts.length - 1] : expression.trim();
-      
-      console.log(`Manual fetch triggered for mood: ${coreMood}. Fetching song...`);
-      handleGetSong({ mood: coreMood });
+    const validMoods = ["happy", "sad", "surprised", "angry", "neutral"];
+    if (validMoods.includes(expression)) {
+      console.log(`Manual fetch triggered for mood: ${expression}. Fetching song...`);
+      handleGetSong({ mood: expression });
     } else {
       alert("Please wait for a valid face expression before fetching a song.");
     }
@@ -82,7 +90,7 @@ const FaceExpression = () => {
           gap: "10px"
         }}
       >
-        <div>Expression: {expression}</div>
+        <div>Expression: {moodDisplayMap[expression] || expression}</div>
         <button 
           onClick={fetchSongBasedOnMood}
           style={{

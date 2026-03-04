@@ -19,88 +19,74 @@ const Register = () => {
   }
 
   return (
-    <main className="relative flex justify-center items-center h-screen bg-[#e6eff7]">
+    <main className="flex justify-center items-center min-h-screen bg-black text-white">
       <Nav />
-      <div
-        className="
-      bg-white/30
-      backdrop-blur-2xl
-      shadow-[0_8px_32px_rgba(31,38,135,0.37)]
-      border border-black/20
-      rounded-2xl
-      p-10
-      flex flex-col
-      items-center
-      gap-6
-    "
-      >
-        <div className="flex justify-center items-center font-bold text-red-900 drop-shadow-lg gap-2 pr-4">
-          <i className="fa-solid fa-person-circle-plus text-2xl"></i>
+
+      <div className="bg-[#121212] border border-gray-800 rounded-xl p-10 flex flex-col items-center gap-6 w-[380px]">
+
+        <div className="flex justify-center items-center font-bold gap-2">
+          <i className="fa-solid fa-person-circle-plus text-2xl text-green-500"></i>
           <h1 className="text-3xl">Register</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 w-72 ">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
+
           <input
-            onChange={(e) => {
-              setUsername(e.target.value);
-            }}
+            onChange={(e) => setUsername(e.target.value)}
             value={username}
             type="text"
             name="username"
             placeholder="Enter username"
-            className="bg-white/20 text-black/80 font-medium placeholder-gray-300 px-4 py-3 rounded-lg focus:outline-none border border-black/30 backdrop-blur-md"
+            className="bg-[#121212] border border-gray-700 px-4 py-3 rounded-md focus:outline-none focus:border-green-500"
           />
+
           <input
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
+            onChange={(e) => setEmail(e.target.value)}
             value={email}
             type="email"
             name="email"
             placeholder="Enter email address"
-            className="bg-white/20 text-black/80 font-medium  placeholder-gray-300 px-4 py-3 rounded-lg focus:outline-none border border-black/30 backdrop-blur-md"
+            className="bg-[#121212] border border-gray-700 px-4 py-3 rounded-md focus:outline-none focus:border-green-500"
           />
 
           <div className="relative w-full">
             <input
-              onChange={(e) => {
-                setPassword(e.target.value);
-              }}
+              onChange={(e) => setPassword(e.target.value)}
               value={password}
               type={eyetoggle ? "password" : "text"}
               name="password"
               placeholder="Enter password"
-              className="bg-white/20 w-full text-black/80 font-medium  placeholder-gray-300 px-4 py-3 rounded-lg focus:outline-none border border-black/30 backdrop-blur-md"
+              className="bg-[#121212] w-full border border-gray-700 px-4 py-3 rounded-md focus:outline-none focus:border-green-500"
             />
+
             <div
-              onClick={() => {
-                setEyetoggle(!eyetoggle);
-              }}
-              className="absolute right-3 top-3 cursor-pointer"
+              onClick={() => setEyetoggle(!eyetoggle)}
+              className="absolute right-3 top-3 cursor-pointer text-gray-400"
             >
-              <div className="text-black/80 text-md">
-                {eyetoggle ? (
-                  <i className="fa-solid fa-eye-slash"></i>
-                ) : (
-                  <i className="fa-solid fa-eye"></i>
-                )}
-              </div>
+              {eyetoggle ? (
+                <i className="fa-solid fa-eye-slash"></i>
+              ) : (
+                <i className="fa-solid fa-eye"></i>
+              )}
             </div>
           </div>
 
           <button
             type="submit"
-            className="rounded-lg bg-red-900 text-white font-semibold px-4 py-3 hover:bg-red-800 transition backdrop-blur-md active:scale-95 cursor-pointer"
+            className="bg-[#1DB954] text-black font-semibold py-3 rounded-full hover:scale-105 transition active:scale-95"
           >
-            Register
+            Continue
           </button>
+
         </form>
-        <p className="text-black/80 font-medium">
+
+        <p className="text-gray-400">
           Already have an account ?{" "}
-          <Link className="text-green-900 font-bold" to="/login">
-            login
+          <Link className="text-white font-semibold hover:underline" to="/login">
+            Login
           </Link>
         </p>
+
       </div>
     </main>
   );

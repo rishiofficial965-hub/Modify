@@ -30,8 +30,8 @@ const FaceExpression = () => {
   const fetchSongBasedOnMood = () => {
     if (expression && !expression.includes("Initializing") && !expression.includes("Waiting") && !expression.includes("No face detected")) {
       // Extract main emotion from string (e.g., "😊 Happy" -> "Happy")
-      const moodParts = expression.split(" ");
-      const coreMood = moodParts.length > 1 ? moodParts[moodParts.length - 1] : expression;
+      const moodParts = expression.trim().split(" ");
+      const coreMood = moodParts.length > 1 ? moodParts[moodParts.length - 1] : expression.trim();
       
       console.log(`Manual fetch triggered for mood: ${coreMood}. Fetching song...`);
       handleGetSong({ mood: coreMood });

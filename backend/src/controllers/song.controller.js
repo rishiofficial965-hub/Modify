@@ -33,7 +33,7 @@ async function uploadSong(req, res) {
 }
 
 async function getSong(req, res) {
-  const { mood } = req.query;
+  const mood = req.query.mood?.toLowerCase();
   const song = await songModel.findOne({
     mood,
   });

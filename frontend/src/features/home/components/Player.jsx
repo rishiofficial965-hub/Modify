@@ -9,9 +9,30 @@ import {
   FaVolumeUp,
 } from "react-icons/fa";
 import { songContext } from "../song.context";
+import { useState, useRef, useEffect } from "react";
 
 const Player = () => {
   const { song } = useContext(songContext);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    if (song && audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  }, [song]);
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   if (!song) {
     return (
@@ -26,15 +47,16 @@ const Player = () => {
 
       {/* LEFT : SONG INFO */}
       <div className="flex items-center gap-4 w-1/4">
+        <audio ref={audioRef} src={song.url} onEnded={() => setIsPlaying(false)} />
         <img
-          src={song.imageUrl || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop"}
+          src={song.postUrl || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop"}
           alt="cover"
           className="w-14 h-14 rounded object-cover"
         />
 
         <div>
-          <p className="text-sm font-semibold truncate w-40">{song.songName || "Unknown Song"}</p>
-          <p className="text-xs text-gray-400 truncate w-40">{song.artistName || "Unknown Artist"}</p>
+          <p className="text-sm font-semibold truncate w-40">{song.title || "Unknown Song"}</p>
+          <p className="text-xs text-gray-400 truncate w-40">Modify Originals</p>
         </div>
       </div>
 
@@ -45,8 +67,11 @@ const Player = () => {
           <FaRandom className="cursor-pointer text-gray-400 hover:text-white" />
           <FaStepBackward className="cursor-pointer hover:text-green-500" />
 
-          <button className="bg-white text-black p-3 rounded-full hover:scale-105">
-            <FaPlay />
+          <button 
+            onClick={togglePlay}
+            className="bg-white text-black p-3 rounded-full hover:scale-105"
+          >
+            {isPlaying ? <FaPause /> : <FaPlay />}
           </button>
 
           <FaStepForward className="cursor-pointer hover:text-green-500" />

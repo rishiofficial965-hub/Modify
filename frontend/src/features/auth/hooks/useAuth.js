@@ -7,29 +7,58 @@ export const useAuth = () => {
   const { user, setUser, loading, setLoading } = context;
 
   async function handleRegister({ username, email, password }) {
-    setLoading(true);
-    const data = await register({ email, password, username });
-    setUser(data.user);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const data = await register({ email, password, username });
+      setUser(data.user);
+      return { success: true };
+    } catch (error) {
+      console.error("Registration error:", error);
+      return { success: false, message: error.response?.data?.message || "Username or email already exists" };
+    } finally {
+      setLoading(false);
+    }
   }
+  
   async function handleLogin({ username, email, password }) {
-    setLoading(true);
-    const data = await login({ email, password, username });
-    setUser(data.user);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const data = await login({ email, password, username });
+      setUser(data.user);
+      return { success: true };
+    } catch (error) {
+      console.error("Login error:", error);
+      return { success: false, message: error.response?.data?.message || "Invalid credentials" };
+    } finally {
+      setLoading(false);
+    }
   }
+  
   async function handleGetMe() {
-    setLoading(true);
-    const data = await getMe();
-    setUser(data.user);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const data = await getMe();
+      setUser(data.user);
+    } catch (error) {
+      console.error("Error fetching user session:", error);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }
+  
   async function handleLogout() {
-    setLoading(true);
-    await logout();
-    setUser(null);
-    setLoading(false);
+    try {
+      setLoading(true);
+      await logout();
+      setUser(null);
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoading(false);
+    }
   }
+  
   useEffect(() => {
     handleGetMe();
   }, []);

@@ -1,9 +1,17 @@
-import React from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth";
 
 const Nav = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, handleLogout } = useAuth();
+  
   const isLoginPage = location.pathname === "/login";
+
+  const onLogout = async () => {
+    await handleLogout();
+    navigate("/login");
+  };
 
   return (
     <nav className="absolute top-8 left-1/2 -translate-x-1/2 w-[90%] max-w-5xl bg-white/20 backdrop-blur-3xl rounded-full px-8 py-4 flex items-center justify-between shadow-[0_4px_20px_rgba(0,0,0,0.6)] border border-gray-800 z-50">
@@ -24,7 +32,15 @@ const Nav = () => {
       <div className="flex-1"></div>
 
       <div className="flex justify-end gap-6 text-white text-[22px] px-2">
-        {isLoginPage ? (
+        {user ? (
+          <button
+            onClick={onLogout}
+            className="hover:text-[#1DB954] transition flex items-center cursor-pointer"
+            title="Logout"
+          >
+            <i className="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        ) : isLoginPage ? (
           <Link
             to="/register"
             className="hover:text-[#1DB954] transition flex items-center"

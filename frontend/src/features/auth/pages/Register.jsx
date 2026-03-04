@@ -8,26 +8,34 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [eyetoggle, setEyetoggle] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
   const { handleRegister } = useAuth();
 
   const Navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    await handleRegister({ username, password, email });
-    Navigate("/");
+    setErrorMsg("");
+    const result = await handleRegister({ username, password, email });
+    if (result && result.success) {
+      Navigate("/home");
+    } else {
+      setErrorMsg(result?.message || "Username or email already exists");
+    }
   }
 
   return (
     <main className="flex justify-center items-center min-h-screen bg-black text-white">
       <Nav />
 
-      <div className="bg-[#121212] border border-gray-800 rounded-xl p-10 flex flex-col items-center gap-6 w-[380px]">
+      <div className="bg-[#121212] border border-gray-800 rounded-3xl p-10 flex flex-col items-center gap-6 w-[380px]">
 
         <div className="flex justify-center items-center font-bold gap-2">
           <i className="fa-solid fa-person-circle-plus text-2xl text-green-500"></i>
           <h1 className="text-3xl">Register</h1>
         </div>
+
+        {errorMsg && <p className="text-red-500 text-sm font-semibold text-center">{errorMsg}</p>}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
 
@@ -73,7 +81,7 @@ const Register = () => {
 
           <button
             type="submit"
-            className="bg-[#1DB954] text-black font-semibold py-3 rounded-full hover:scale-105 transition active:scale-95"
+            className="bg-[#1DB954] text-black font-semibold py-3 rounded-full hover:scale-102 transition active:scale-95 cursor-pointer"
           >
             Continue
           </button>

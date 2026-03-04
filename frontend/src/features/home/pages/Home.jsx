@@ -7,7 +7,6 @@ const Home = () => {
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center relative overflow-hidden">
       <Nav />
       
-      {/* Main Content Area */}
       <main className="flex-1 flex flex-col items-center justify-center w-full px-4 pt-32 pb-24 z-10 gap-8">
         
         <div className="bg-[#121212] border border-gray-800 rounded-3xl p-10 flex flex-col items-center gap-6 w-[550px] shadow-lg">

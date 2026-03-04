@@ -18,7 +18,6 @@ const Nav = () => {
       
       <Link to="/" className="flex items-center gap-2 cursor-pointer">
         <div className="text-[#1DB954] text-[28px] leading-none mt-1">
-          {/* <i className="fa-brands fa-spotify"></i> */}
         </div>
 
         <span

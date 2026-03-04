@@ -59,15 +59,6 @@ export const useAuth = () => {
     }
   }
   
-  const hasFetched = useRef(false);
-
-  useEffect(() => {
-    if (!hasFetched.current) {
-      handleGetMe();
-      hasFetched.current = true;
-    }
-  }, []);
-
   return {
     user,
     loading,

@@ -1,14 +1,13 @@
 import Webcam from "react-webcam";
 import { FaceLandmarker, FilesetResolver } from "@mediapipe/tasks-vision";
 
-export const loop = ({ landmarkerRef, webcamRef, setExpression, requestRef }) => {
-  detectBlendshapes({ landmarkerRef, webcamRef, setExpression });
+export const loop = ({ landmarkerRef, webcamRef, setExpression, requestRef, expressionRef }) => {
+  detectBlendshapes({ landmarkerRef, webcamRef, setExpression, currentExpression: expressionRef.current });
   requestRef.current = requestAnimationFrame(() =>
-    loop({ landmarkerRef, webcamRef, setExpression, requestRef })
+    loop({ landmarkerRef, webcamRef, setExpression, requestRef, expressionRef })
   );
 };
 
-// 🔥 Improved Emotion Mapping
 export const mapToEmotion = (blend) => {
   const s = {};
   blend.forEach((b) => (s[b.categoryName] = b.score));
@@ -25,11 +24,12 @@ export const detectBlendshapes = ({
   landmarkerRef,
   webcamRef,
   setExpression,
+  currentExpression,
 }) => {
   if (!landmarkerRef.current || !webcamRef.current) return;
 
   const video = webcamRef.current.video;
-  if (!video || video.readyState !== 4) return;
+  if (!video || video.readyState !== 4 || video.videoWidth === 0 || video.videoHeight === 0) return;
 
   try {
     const result = landmarkerRef.current.detectForVideo(
@@ -40,8 +40,10 @@ export const detectBlendshapes = ({
     if (result.faceBlendshapes?.length > 0) {
       const blend = result.faceBlendshapes[0].categories;
       const emotion = mapToEmotion(blend);
-      setExpression(emotion);
-    } else {
+      if (emotion !== currentExpression) {
+        setExpression(emotion);
+      }
+    } else if (currentExpression !== "No face detected") {
       setExpression("No face detected");
     }
   } catch (err) {
@@ -55,7 +57,13 @@ export const initModel = async ({
   requestRef,
   webcamRef,
   setError,
+  expressionRef,
+  isMounted,
+  isInitializingRef
 }) => {
+  if (isInitializingRef.current || landmarkerRef.current) return;
+  isInitializingRef.current = true;
+
   try {
     const vision = await FilesetResolver.forVisionTasks(
       "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.32/wasm",
@@ -71,14 +79,26 @@ export const initModel = async ({
       numFaces: 1,
     });
 
+    if (!isMounted.current) {
+      landmarker.close();
+      return;
+    }
+
     landmarkerRef.current = landmarker;
     setExpression("Waiting for webcam...");
+    
+    if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+    }
+
     requestRef.current = requestAnimationFrame(() =>
-      loop({ landmarkerRef, webcamRef, setExpression, requestRef })
+      loop({ landmarkerRef, webcamRef, setExpression, requestRef, expressionRef })
     );
   } catch (err) {
     console.error("Failed to initialize FaceLandmarker:", err);
     setError("Failed to load model. Please check your internet connection.");
+  } finally {
+    isInitializingRef.current = false;
   }
 };
  

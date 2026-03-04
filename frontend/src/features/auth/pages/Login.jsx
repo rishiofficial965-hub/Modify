@@ -9,7 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [eyetoggle, setEyetoggle] = useState(true);
-  const [useEmailLogin, setUseEmailLogin] = useState(false); // New state for toggle
+  const [useEmailLogin, setUseEmailLogin] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const { handleLogin } = useAuth();
   const Navigate = useNavigate();
@@ -82,7 +82,6 @@ const Login = () => {
             </div>
           </div>
          
-          {/* Toggle Type */}
           <div className="flex items-center justify-end text-xs gap-2 text-gray-400">
             <button
               type="button"

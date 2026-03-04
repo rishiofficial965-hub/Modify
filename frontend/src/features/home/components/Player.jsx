@@ -14,11 +14,14 @@ import { useState, useRef, useEffect } from "react";
 const Player = () => {
   const { song } = useContext(songContext);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
   const audioRef = useRef(null);
 
   useEffect(() => {
     if (song && audioRef.current) {
-      audioRef.current.play();
+      audioRef.current.play().catch(e => console.log("Playback failed:", e));
       setIsPlaying(true);
     }
   }, [song]);
@@ -34,6 +37,41 @@ const Player = () => {
     }
   };
 
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleScrub = (e) => {
+    const time = (e.target.value / 100) * duration;
+    if (audioRef.current) {
+      audioRef.current.currentTime = time;
+      setCurrentTime(time);
+    }
+  };
+
+  const handleVolumeChange = (e) => {
+    const val = e.target.value / 100;
+    setVolume(val);
+    if (audioRef.current) {
+      audioRef.current.volume = val;
+    }
+  };
+
+  const formatTime = (time) => {
+    if (!time) return "0:00";
+    const min = Math.floor(time / 60);
+    const sec = Math.floor(time % 60);
+    return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+  };
+
   if (!song) {
     return (
       <div className="fixed bottom-0 left-0 w-full h-20 bg-black text-white flex items-center justify-center px-6">
@@ -45,9 +83,14 @@ const Player = () => {
   return (
     <div className="fixed bottom-0 left-0 w-full h-20 bg-black text-white flex items-center justify-between px-6">
 
-      {/* LEFT : SONG INFO */}
       <div className="flex items-center gap-4 w-1/4">
-        <audio ref={audioRef} src={song.url} onEnded={() => setIsPlaying(false)} />
+        <audio 
+          ref={audioRef} 
+          src={song.url} 
+          onEnded={() => setIsPlaying(false)} 
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+        />
         <img
           src={song.postUrl || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop"}
           alt="cover"
@@ -60,7 +103,6 @@ const Player = () => {
         </div>
       </div>
 
-      {/* CENTER : CONTROLS */}
       <div className="flex flex-col items-center w-2/4">
 
         <div className="flex items-center gap-6 text-lg">
@@ -78,25 +120,33 @@ const Player = () => {
           <FaRedo className="cursor-pointer text-gray-400 hover:text-white" />
         </div>
 
-        {/* PROGRESS BAR */}
         <div className="flex items-center gap-3 w-full mt-2">
-          <span className="text-xs text-gray-400">0:00</span>
+          <span className="text-xs text-gray-400">{formatTime(currentTime)}</span>
 
-          <div className="flex-1 h-1 bg-gray-600 rounded">
-            <div className="h-1 bg-white w-0 rounded"></div>
-          </div>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={(currentTime / duration) * 100 || 0}
+            onChange={handleScrub}
+            className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-[#1DB954]"
+          />
 
-          <span className="text-xs text-gray-400">0:00</span>
+          <span className="text-xs text-gray-400">{formatTime(duration)}</span>
         </div>
       </div>
 
-      {/* RIGHT : VOLUME */}
       <div className="flex items-center gap-3 w-1/4 justify-end">
-        <FaVolumeUp />
+        <FaVolumeUp className="text-gray-400" />
 
-        <div className="w-24 h-1 bg-gray-600 rounded">
-          <div className="h-1 bg-white w-1/2 rounded"></div>
-        </div>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={volume * 100}
+          onChange={handleVolumeChange}
+          className="w-24 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-white"
+        />
       </div>
     </div>
   );

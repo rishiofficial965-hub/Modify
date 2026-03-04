@@ -11,13 +11,32 @@ const FaceExpression = () => {
   const requestRef = useRef(null);
 
   const [expression, setExpression] = useState("Initializing...");
+  const expressionRef = useRef("Initializing...");
+  const isMounted = useRef(true);
+  const isInitializingRef = useRef(false);
   const [error, setError] = useState(null);
   const { handleGetSong } = useSong();
 
+  const updateExpression = (val) => {
+    setExpression(val);
+    expressionRef.current = val;
+  };
+
   useEffect(() => {
-    initModel({ landmarkerRef, setExpression, requestRef, webcamRef, setError });
+    isMounted.current = true;
+    initModel({ 
+      landmarkerRef, 
+      setExpression: updateExpression, 
+      requestRef, 
+      webcamRef, 
+      setError,
+      expressionRef,
+      isMounted,
+      isInitializingRef
+    });
 
     return () => {
+      isMounted.current = false;
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);
       }
@@ -72,7 +91,6 @@ const FaceExpression = () => {
         videoConstraints={{ width: 640, height: 480, facingMode: "user" }}
       />
 
-      {/* Expression Display */}
       <div
         style={{
           position: "absolute",
